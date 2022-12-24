@@ -1,14 +1,20 @@
-from PyQt6.QtWidgets import QWidget, QTreeWidget, QTreeWidgetItem, QLabel, QHBoxLayout, QVBoxLayout, QLineEdit, QComboBox, QPushButton
-from extensions.player import Player, AI, PlayerColor
-from extensions.game import Game
+from PyQt6.QtWidgets import QWidget
 from extensions.maps import Map
+
+
+# class City(QWidget)
 
 
 class MapWidget(QWidget):
 
-    def __init__(self, map: Map, *args, **kwargs):
+    def __init__(self, map: Map = None, *args, **kwargs):
         """ Class for displaying the map. """
         super().__init__(*args, **kwargs)
 
-        self.map = map
+        self.map = None
+        if map:
+            self.init_with_map()
+
+    def init_with_map(self, map: Map):
+        pass
 

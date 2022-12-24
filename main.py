@@ -26,6 +26,7 @@ if __name__ == "__main__":
     sheila = Player("Sheila", PlayerColor.yellow, 42)
     ai = AI("AI", PlayerColor.green, 42)
     window.game = Game([jon, sheila, ai], Map("Europe"))
+    window.gameplay_widget.init_game(window.game)
     window.window_stack.setCurrentIndex(1)
 
     window.show()

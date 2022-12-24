@@ -1,4 +1,4 @@
-from extensions.graph import Color, Node, Route
+from extensions.graph import Color, Node, Path
 import random
 import enum
 
@@ -18,7 +18,7 @@ class Player():
         self.color = color
         self.train_count = train_count
 
-        self.tickets = {}  # {Ticket, Route}
+        self.tickets = {}  # {Ticket, Path}
         self.hand = {}  # {Color, int}
         for color_ in Color:
             self.hand[color_] = 0
@@ -40,28 +40,28 @@ class AI(Player):
             self.hand[Color(random.randint(1, len(Color)))] += 1
 
 
-    def find_optimal_routes(self):
-        """ Finds the combination of routes for each ticket that combine to the least used trains. """
-        # Find all possible routes for all tickets
+    def find_optimal_paths(self):
+        """ Finds the combination of paths for each ticket that combine to the least used trains. """
+        # Find all possible paths for all tickets
         possibilities = {}
         for ticket in self.tickets:
-            found_routes = []
-            self.find_all_possible_routes(ticket.start_node, ticket.end_node, found_routes=found_routes)
-            possibilities[ticket] = [route for route in found_routes]
+            found_paths = []
+            self.find_all_possible_paths(ticket.start_node, ticket.end_node, found_paths=found_paths)
+            possibilities[ticket] = [path for path in found_paths]
 
         # Find best combination
-        for ticket, routes_list in possibilities.items():
-            for route in routes_list:
+        for ticket, paths_list in possibilities.items():
+            for path in paths_list:
                 pass
 
 
-    def find_all_possible_routes(self, start_node: Node, end_node: Node, found_routes: list[Route], current_route: Route = None):
+    def find_all_possible_paths(self, start_node: Node, end_node: Node, found_paths: list[Path], current_path: Path = None):
         """
-        Fills the found_routes list with all possible routes for player between start_node and end_nodes.
+        Fills the found_paths list with all possible paths for player between start_node and end_nodes.
         """
-        # Init routes
-        if not current_route:
-            current_route = Route(start_node)
+        # Init paths
+        if not current_path:
+            current_path = Path(start_node)
 
         for edge in start_node.edges:
 
@@ -71,20 +71,20 @@ class AI(Player):
                     continue
 
             # Don't go in circles
-            if edge.other_node in current_route.nodes:
+            if edge.other_node in current_path.nodes:
                 continue
 
-            # Don't allow too long routes
-            if current_route.length + edge.length > self.train_count:
+            # Don't allow too long paths
+            if current_path.length + edge.length > self.train_count:
                 continue
 
 
-            # Copy route and add edge
-            expanded_route = Route.copy(current_route)
-            expanded_route.add_edge(edge)
+            # Copy path and add edge
+            expanded_path = Path.copy(current_path)
+            expanded_path.add_edge(edge)
 
-            # Add completed route or continue
+            # Add completed path or continue
             if edge.other_node == end_node:
-                found_routes.append(expanded_route)
+                found_paths.append(expanded_path)
             else:
-                self.find_all_possible_routes(expanded_route.last_node(), end_node, found_routes, expanded_route)
+                self.find_all_possible_paths(expanded_path.last_node(), end_node, found_paths, expanded_path)

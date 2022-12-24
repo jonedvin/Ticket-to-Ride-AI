@@ -33,7 +33,7 @@ class Node():
 
 class Edge():
     def __init__(self, end_nodes: list[Node], color: Color, length: int, locomotive_count: int = 0, track_type: TrackType = TrackType.normal):
-        """ Class for representing an edge in a graph. Equivalent to a single route between two bordering cities. """
+        """ Class for representing an edge in a graph. Equivalent to a single path between two bordering cities. """
         self.end_nodes = end_nodes
         self.color = color
         self.length = length
@@ -62,9 +62,9 @@ class Edge():
                 return node
 
 
-class Route():
+class Path():
     def __init__(self, start_node: Node):
-        """ Class for representing a full route from start_node to an end node. """
+        """ Class for representing a full path from start_node to an end node. """
         self.edges = list[Edge]
         self.nodes = list[Node]
         self.length = 0
@@ -77,7 +77,7 @@ class Route():
 
     @classmethod
     def copy(cls, original):
-        """ Returns a copy of the original route. """
+        """ Returns a copy of the original path. """
         self = cls()
         
         self.edges = [edge for edge in original.edges]
@@ -88,7 +88,7 @@ class Route():
 
 
     def add_edge(self, edge: Edge):
-        """ Adds an edge to the route. """
+        """ Adds an edge to the path. """
         # Add edge and length
         self.edges.append(edge)
         self.length += edge.length
@@ -104,5 +104,5 @@ class Route():
 
 
     def last_node(self):
-        """ Returns the last node included in the route. """
+        """ Returns the last node included in the path. """
         return self.nodes[-1]
