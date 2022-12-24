@@ -9,7 +9,7 @@ class SelectionMenu(QWidget):
     TrainCount = 40
 
     def __init__(self, main_window, *args, **kwargs):
-        """ Class for displaying a login window. """
+        """ Class for displaying the selection menu. """
         super().__init__(*args, **kwargs)
 
         self.main_window = main_window
@@ -110,7 +110,15 @@ class SelectionMenu(QWidget):
         if len(colors) < len(players):
             self.message_label.setText("All players must have different colors.")
             return
+        names = set()
+        for player in players:
+            names.add(player.name)
+        if len(names) < len(players):
+            self.message_label.setText("All players must have different names.")
+            return
 
         # Start game
         self.main_window.game = Game(players, Map(self.map_select.currentItem().text(0)))
+        self.main_window.gameplay_widget.init_game(self.main_window.game)
+        self.main_window.window_stack.setCurrentIndex(1)
         print(self.main_window.game)

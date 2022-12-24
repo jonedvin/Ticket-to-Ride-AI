@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QStackedLayout, QMainWindow
 from gui.selection_menu import SelectionMenu
+from gui.gameplay import GameplayWidget
 import enum
 
 
@@ -29,9 +30,11 @@ class MainWindow(QMainWindow):
         self.setMinimumHeight(200)
 
         # Window stack
-        self.window_stack = QStackedLayout()
         self.selection_widget = SelectionMenu(self)
+        self.gameplay_widget = GameplayWidget(self, self.game)
+        self.window_stack = QStackedLayout()
         self.window_stack.addWidget(self.selection_widget)
+        self.window_stack.addWidget(self.gameplay_widget)
 
         # Build window
         self.central_widget = QWidget(self)
@@ -39,6 +42,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
 
         # Signals
+
 
 
     def closeEvent(self, event):
