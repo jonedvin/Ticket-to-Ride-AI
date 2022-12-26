@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton
 from extensions.game import Game
 from extensions.player import AI
-from extensions.graph import Edge
+from extensions.graph import Edge, TrackType
 from gui.map_widget import MapWidget
 
 
@@ -16,19 +16,26 @@ class GameplayWidget(QWidget):
 
         # Player button line
         self.current_player_label = QLabel("'s turn")
+        self.current_player_label.setContentsMargins(0, 0, 0, 0)
         self.draw_cards_button = QPushButton("Draw cards")
+        self.draw_cards_button.setContentsMargins(0, 0, 0, 0)
         self.player_button_line = QHBoxLayout()
+        self.player_button_line.setContentsMargins(0, 0, 0, 0)
         self.player_button_line.addWidget(self.current_player_label)
         self.player_button_line.addWidget(self.draw_cards_button)
         self.player_button_line.addStretch()
 
         # Map
-        self.map_widget = MapWidget()
+        self.map_widget = MapWidget(self.main_window)
+        self.map_widget.setContentsMargins(0, 0, 0, 0)
 
         self.general_layout = QVBoxLayout()
+        self.general_layout.setContentsMargins(10, 0, 0, 0)
         self.general_layout.addLayout(self.player_button_line)
         self.general_layout.addWidget(self.map_widget)
         self.setLayout(self.general_layout)
+
+        self.setContentsMargins(0, 0, 0, 0)
 
         # Signals
         self.draw_cards_button.clicked.connect(self.draw_cards)
@@ -73,7 +80,21 @@ class GameplayWidget(QWidget):
 
     def buy_route(self, route: Edge):
         """ Buys the specified route for self.current_player. """
-        # Buy route
+        # Tunnel check
+        if route.track_type == TrackType.tunnel:
+            pass
+            # NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+
+        # Take cards from AI
+        if type(self.game.current_player) == AI:
+            self.game.current_player.hand[route.color] -= route.length
+        
+        # Take trains used
+        self.game.current_player.train_count -= route.length
+
+        # Set route to bought
+        route.bought_by = self.game.current_player
+        # NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
 
         # Stop loop if we reached the final round
         if self.game.current_player.train_count <= 2:

@@ -18,12 +18,15 @@ class Color(enum.Enum):
 
 
 class Node():
-    def __init__(self, name: str, add_to: list = None):
+    def __init__(self, name: str, add_to: list = None, x: int = None, y: int = None):
         """ Class for representing a node in a graph. Equivalent to a city in TtR. """
         self.name = name
         self.edges = []
 
-        if add_to:
+        self.x = x
+        self.y = y
+
+        if type(add_to) == list:
             add_to.append(self)
     
     def add_edge(self, edge):

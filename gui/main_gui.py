@@ -26,20 +26,26 @@ class MainWindow(QMainWindow):
         # Window parametres
         self.setWindowTitle('AdminGUI')
         self.resize(self.WindowWidth, self.WindowHeight)
-        self.move(200, 100)
+        self.move(60, 60)
         self.setMinimumHeight(200)
 
         # Window stack
         self.selection_widget = SelectionMenu(self)
+        self.selection_widget.setContentsMargins(0, 0, 0, 0)
         self.gameplay_widget = GameplayWidget(self, self.game)
+        self.gameplay_widget.setContentsMargins(0, 0, 0, 0)
         self.window_stack = QStackedLayout()
+        self.window_stack.setContentsMargins(0, 0, 0, 0)
         self.window_stack.addWidget(self.selection_widget)
         self.window_stack.addWidget(self.gameplay_widget)
 
         # Build window
         self.central_widget = QWidget(self)
+        self.central_widget.setContentsMargins(0, 0, 0, 0)
         self.central_widget.setLayout(self.window_stack)
         self.setCentralWidget(self.central_widget)
+
+        self.setContentsMargins(0, 0, 0, 0)
 
         # Signals
 

@@ -53,6 +53,7 @@ class AI(Player):
         for ticket, paths_list in possibilities.items():
             for path in paths_list:
                 pass
+        # NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
 
 
     def find_all_possible_paths(self, start_node: Node, end_node: Node, found_paths: list[Path], current_path: Path = None):
