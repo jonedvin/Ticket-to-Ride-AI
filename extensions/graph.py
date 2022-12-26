@@ -28,6 +28,9 @@ class Node():
 
         if type(add_to) == list:
             add_to.append(self)
+
+    def __repr__(self):
+        return self.name
     
     def add_edge(self, edge):
         """ Adds an edge to the node. """
