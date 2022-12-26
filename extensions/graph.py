@@ -38,11 +38,12 @@ class Node():
 
 
 class Edge():
-    def __init__(self, end_nodes: list[Node], color: Color, length: int, locomotive_count: int = 0, track_type: TrackType = TrackType.normal):
+    def __init__(self, end_nodes: list[Node], color: Color, length: int, hex_id: str, locomotive_count: int = 0, track_type: TrackType = TrackType.normal):
         """ Class for representing an edge in a graph. Equivalent to a single path between two bordering cities. """
         self.end_nodes = end_nodes
         self.color = color
         self.length = length
+        self.hex_id = hex_id
         self.locomotive_count = locomotive_count
         self.track_type = track_type
         self.bought_by = None
@@ -50,6 +51,9 @@ class Edge():
         # Add edge to list of edges in each end node
         for node in self.end_nodes:
             node.add_edge(self)
+    
+    def __repr__(self):
+        return f"{self.end_nodes[0]} -> {self.end_nodes[1]}: {self.length} {self.color.name}"
     
     def buy(self, player):
         """ Registers that the edge has been bought by player. """

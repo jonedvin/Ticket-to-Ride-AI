@@ -1,8 +1,8 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QCheckBox
 from extensions.game import Game
 from extensions.player import AI
 from extensions.graph import Edge, TrackType
-from gui.map_widget import MapWidget
+from gui.map_widget import MapWidget, MapType
 
 
 class GameplayWidget(QWidget):
@@ -16,18 +16,16 @@ class GameplayWidget(QWidget):
 
         # Player button line
         self.current_player_label = QLabel("'s turn")
-        self.current_player_label.setContentsMargins(0, 0, 0, 0)
         self.draw_cards_button = QPushButton("Draw cards")
-        self.draw_cards_button.setContentsMargins(0, 0, 0, 0)
+        self.show_color_map = QCheckBox("Show color map")
         self.player_button_line = QHBoxLayout()
-        self.player_button_line.setContentsMargins(0, 0, 0, 0)
         self.player_button_line.addWidget(self.current_player_label)
         self.player_button_line.addWidget(self.draw_cards_button)
         self.player_button_line.addStretch()
+        self.player_button_line.addWidget(self.show_color_map)
 
         # Map
         self.map_widget = MapWidget(self.main_window)
-        self.map_widget.setContentsMargins(0, 0, 0, 0)
 
         self.general_layout = QVBoxLayout()
         self.general_layout.setContentsMargins(10, 0, 0, 0)
@@ -35,10 +33,10 @@ class GameplayWidget(QWidget):
         self.general_layout.addWidget(self.map_widget)
         self.setLayout(self.general_layout)
 
-        self.setContentsMargins(0, 0, 0, 0)
 
         # Signals
         self.draw_cards_button.clicked.connect(self.draw_cards)
+        self.show_color_map.toggled.connect(self.toggle_maps)
 
 
     def init_game(self, game: Game):
@@ -46,6 +44,14 @@ class GameplayWidget(QWidget):
         self.game = game
         self.update_current_player_label()
         self.map_widget.init_with_map(self.game.map)
+
+
+    def toggle_maps(self):
+        """ Toggles the map shown in map_widget between pretty and color. """
+        if self.show_color_map.isChecked():
+            self.map_widget.general_layout.setCurrentIndex(MapType.color.value)
+        else:
+            self.map_widget.general_layout.setCurrentIndex(MapType.pretty.value)
 
 
     def update_current_player_label(self):
