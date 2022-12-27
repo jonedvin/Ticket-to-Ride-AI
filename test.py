@@ -17,10 +17,14 @@ class MyClass():
         self.name = "myname"
 
 
-print(str(Color.red).split(".")[1])
-
 # mydict = dict[str, MyClass]
 # mydict["test"] = MyClass()
 # # mydict[Color.red] = 3
 
 # print(mydict)
+
+mydict = {
+    "a": 1,
+    "b": 2
+}
+print(len(mydict))

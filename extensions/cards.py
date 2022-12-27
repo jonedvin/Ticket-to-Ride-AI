@@ -6,3 +6,6 @@ class Ticket():
         self.start_node = start_node
         self.end_node = end_node
         self.points = points
+
+    def __repr__(self):
+        return f"Ticket: {self.start_node} -> {self.end_node}, {self.points} points"

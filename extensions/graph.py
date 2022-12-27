@@ -75,20 +75,26 @@ class Edge():
 class Path():
     def __init__(self, start_node: Node):
         """ Class for representing a full path from start_node to an end node. """
-        self.edges = list[Edge]
-        self.nodes = list[Node]
+        self.edges = []
+        self.nodes = []
         self.length = 0
-        self.necessary_color_count = dict[Color: int]
+        self.necessary_color_count = {}  # {Color: int}
         
         for color in Color:
             self.necessary_color_count[color] = 0
         self.nodes.append(start_node)
 
+    def __repr__(self):
+        text = ""
+        for node in self.nodes:
+            text += f"{node} -> "
+        return text[:-4]
+
 
     @classmethod
     def copy(cls, original):
         """ Returns a copy of the original path. """
-        self = cls()
+        self = cls("")
         
         self.edges = [edge for edge in original.edges]
         self.nodes = [node for node in original.nodes]
@@ -105,14 +111,45 @@ class Path():
 
         # Add new node
         for node in edge.end_nodes:
-            if node != self.nodes[-1]:
+            if node not in self.nodes:
                 self.nodes.append(node)
 
         # Increase color count
         self.necessary_color_count[edge.color] += edge.length - edge.locomotive_count
-        self.necessary_color_count[edge.locomotive_count] += edge.locomotive_count
+        self.necessary_color_count[Color.locomotive] += edge.locomotive_count
 
 
     def last_node(self):
         """ Returns the last node included in the path. """
         return self.nodes[-1]
+
+
+class PathSet():
+    def __init__(self):
+        self.paths = []
+        self.routes_included = set()
+
+    def __repr__(self):
+        text = ""
+        for route in self.routes_included:
+            text += f"\n{route}"
+        return text
+    
+    @classmethod
+    def copy_from(cls, original):
+        self = cls()
+        self.paths = [path for path in original.paths]
+        self.routes_included = original.routes_included.copy()
+        return self
+
+    @property
+    def trains_needed(self):
+        total = 0
+        for route in self.routes_included:
+            total += route.length
+        return total
+
+    def add_path(self, path: Path):
+        self.paths.append(path)
+        for edge in path.edges:
+            self.routes_included.add(edge)
