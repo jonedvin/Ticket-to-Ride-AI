@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QCheckBox
-from extensions.game import Game
-from extensions.player import AI
-from extensions.graph import Edge, TrackType
+from extensions.player import AI, Player
+from extensions.graph import Edge
+from extensions.maps import Map
 from gui.map_widget import MapWidget, MapType
 
 
@@ -13,9 +13,24 @@ class GameplayWidget(QWidget):
         super().__init__(*args, **kwargs)
 
         self.main_window = main_window
-        self.game = None
-        self.last_player = None
 
+        self.players = None  # list[Player]
+        self.current_player = None  # Player
+        self.map = None  # Map
+        self.last_player = None  # Player
+
+        # Keep track of who did what when, so we can go back in case of a misclick
+        self.starting_player = self.current_player
+        self.actions = []
+
+        self.init_gui()
+
+    
+
+######## Init functions ####################################################################################
+
+    def init_gui(self):
+        """ Builds the window. """
         # Player button line
         self.current_player_label = QLabel("'s turn")
         self.draw_cards_button = QPushButton("Draw cards")
@@ -45,13 +60,19 @@ class GameplayWidget(QWidget):
         self.show_color_map.toggled.connect(self.toggle_maps)
 
 
-    def init_game(self, game: Game):
-        """ Initializes the gameplay window with the chosen game. """
-        self.game = game
-        self.update_current_player_label()
-        self.map_widget.init_with_map(self.game.map)
-        self.main_window.setFixedSize(self.map_widget.map.width+self.PlayersLabelWidth, self.map_widget.map.height+100)
+    def init_game(self, players: list[Player], map: Map):
+        """ Initializes the game with players and map. """
+        self.players = players
+        self.current_player = players[0]
+        self.map = map  # Map
 
+        self.update_current_player_label()
+        self.map_widget.init_with_map(self.map)
+        self.main_window.setFixedSize(self.map.width+self.PlayersLabelWidth, self.map.height+100)
+
+
+
+######## GUI functions ####################################################################################
 
     def toggle_maps(self):
         """ Toggles the map shown in map_widget between pretty and color. """
@@ -60,11 +81,9 @@ class GameplayWidget(QWidget):
         else:
             self.map_widget.general_layout.setCurrentIndex(MapType.pretty.value)
 
-
     def update_current_player_label(self):
         """ Updates self.current_player_label to correct name. """
-        self.current_player_label.setText(f"{self.game.current_player.name}'s turn")
-
+        self.current_player_label.setText(f"{self.current_player.name}'s turn")
     
     def update_players_last_action_label(self):
         """ Updates self.players_last_action_label. """
@@ -72,27 +91,29 @@ class GameplayWidget(QWidget):
         print(current_text_list)
 
 
+
+######## Gameplay functions ####################################################################################
+
     def next_player(self):
         """ Changes the turn to the next player. Finishes the game if it's done. """
         # If the game is done
         if self.last_player:
-            if self.game.current_player == self.last_player:
+            if self.current_player == self.last_player:
                 pass
                 # Finish game
 
         # Set next player
-        next_index = self.game.players.index(self.game.current_player)+1
-        if next_index >= len(self.game.players):
+        next_index = self.players.index(self.current_player)+1
+        if next_index >= len(self.players):
             next_index = 0
-        self.game.current_player = self.game.players[next_index]
+        self.current_player = self.players[next_index]
 
         # Update current player label
         self.update_current_player_label()
 
         # Run AI if it's its turn
-        if type(self.game.current_player) == AI:
-            self.game.current_player.take_turn()
-
+        if type(self.current_player) == AI:
+            self.current_player.take_turn()
 
 
     def draw_cards(self):
@@ -102,24 +123,9 @@ class GameplayWidget(QWidget):
 
     def buy_route(self, route: Edge):
         """ Buys the specified route for self.current_player. """
-        # Tunnel check
-        if route.track_type == TrackType.tunnel:
-            pass
-            # NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
-
-        # Take cards from AI
-        if type(self.game.current_player) == AI:
-            self.game.current_player.hand[route.color] -= route.length
-        
-        # Take trains used
-        self.game.current_player.train_count -= route.length
-
-        # Set route to bought
-        route.bought_by = self.game.current_player
-        # NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
 
         # Stop loop if we reached the final round
-        if self.game.current_player.train_count <= 2:
-            self.last_player = self.game.current_player
+        if self.current_player.train_count <= 2:
+            self.last_player = self.current_player
 
         self.next_player()

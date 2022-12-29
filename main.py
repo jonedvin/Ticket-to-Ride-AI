@@ -1,5 +1,4 @@
 from extensions.player import Player, AI, PlayerColor
-from extensions.game import Game
 from extensions.maps import Map
 from extensions.cards import Ticket
 from PyQt6.QtWidgets import QApplication
@@ -26,8 +25,7 @@ if __name__ == "__main__":
     jon = Player("Jon", PlayerColor.black, 42)
     sheila = Player("Sheila", PlayerColor.yellow, 42)
     ai = AI("AI", PlayerColor.green, 42)
-    window.game = Game([jon, sheila, ai], Map("Europe"))
-    window.gameplay_widget.init_game(window.game)
+    window.gameplay_widget.init_game([jon, sheila, ai], Map("Europe"))
     window.window_stack.setCurrentIndex(1)
 
     # AI testig block

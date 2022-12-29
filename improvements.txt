@@ -19,6 +19,7 @@ TODO:
 - Game flow
 - Buy route
 - Finish game
+- Player.buy_route tunnel check
 
 - GUI for trains
 - Finish update_players_last_action_label

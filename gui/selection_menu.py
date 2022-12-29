@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QTreeWidget, QTreeWidgetItem, QLabel, QHBoxLayout, QVBoxLayout, QLineEdit, QComboBox, QPushButton
 from extensions.player import Player, AI, PlayerColor
-from extensions.game import Game
 from extensions.maps import Map
 
 
@@ -118,7 +117,5 @@ class SelectionMenu(QWidget):
             return
 
         # Start game
-        self.main_window.game = Game(players, Map(self.map_select.currentItem().text(0)))
-        self.main_window.gameplay_widget.init_game(self.main_window.game)
+        self.main_window.gameplay_widget.init_game(players, Map(self.map_select.currentItem().text(0)))
         self.main_window.window_stack.setCurrentIndex(1)
-        print(self.main_window.game)

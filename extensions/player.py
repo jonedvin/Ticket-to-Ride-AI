@@ -1,4 +1,4 @@
-from extensions.graph import Color, Node, Path, PathSet, Edge
+from extensions.graph import Color, Node, Path, PathSet, Edge, TrackType
 import random
 import enum
 
@@ -29,8 +29,16 @@ class Player():
 
     def buy_route(self, route: Edge):
         """ Buys the specified route. """
+        # Check if they can buy tunnel
+        if route.track_type == TrackType.tunnel:
+            pass
+
+        # Buy route
         route.bought_by = self
+        self.train_count -= route.length
+
         # Display bought route
+        pass
 
 
 
@@ -65,8 +73,7 @@ class AI(Player):
 
     def buy_route(self, route: Edge):
         """ Buys the specified route. """
-        route.bought_by = self
-        # Display bought route
+        super().buy_route(route)
 
         # Take cards for route
         self.hand[Color.locomotive] -= route.locomotive_count
