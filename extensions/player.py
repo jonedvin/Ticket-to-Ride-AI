@@ -27,19 +27,6 @@ class Player():
     def __repr__(self):
         return f"{self.name}, {self.color}, {self.train_count} trains left"
 
-    def buy_route(self, route: Edge):
-        """ Buys the specified route. """
-        # Check if they can buy tunnel
-        if route.track_type == TrackType.tunnel:
-            pass
-
-        # Buy route
-        route.bought_by = self
-        self.train_count -= route.length
-
-        # Display bought route
-        pass
-
 
 
 class AI(Player):
@@ -64,23 +51,11 @@ class AI(Player):
         for _ in range(count):
             self.hand[Color(random.randint(1, len(Color)))] += 1
 
-    
+
     def draw_tickets(self):
         """ Draws tickets and picks which ones to keep. """
         self.last_action = LastAction.drew_tickets
         pass
-
-
-    def buy_route(self, route: Edge):
-        """ Buys the specified route. """
-        super().buy_route(route)
-
-        # Take cards for route
-        self.hand[Color.locomotive] -= route.locomotive_count
-        self.hand[route.color] -= route.length - route.locomotive_count
-        if self.hand[route.color] < 0:
-            self.hand[Color.locomotive] -= abs(self.hand[route.color])
-            self.hand[route.color] = 0
 
 
     def find_all_possible_paths(self, start_node: Node, end_node: Node, found_paths: list[Path], current_path: Path = None):
@@ -152,7 +127,10 @@ class AI(Player):
 
 
     def take_turn(self):
-        """ AI finds it's best path set, and decides what to do in its turn. """
+        """
+        AI finds it's best path set, and decides what to do in its turn.\n
+        Returns the route to buy if it chooses to buy a route, None if not.
+        """
         # Get more tickets if we're out
         completed_all = True
         for ticket in self.tickets:
@@ -182,8 +160,7 @@ class AI(Player):
                 continue
 
             # Have enough cards to buy route
-            self.buy_route(route)
-            return
+            return route
     
         # Draw cards if we can't buy a route
         self.draw_cards()

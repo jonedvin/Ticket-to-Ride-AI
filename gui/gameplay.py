@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QCheckBox
-from extensions.player import AI, Player
-from extensions.graph import Edge
+from extensions.player import AI, Player, LastAction
+from extensions.graph import Edge, TrackType, Color
 from extensions.maps import Map
 from gui.map_widget import MapWidget, MapType
 
@@ -42,7 +42,7 @@ class GameplayWidget(QWidget):
         self.player_button_line.addWidget(self.show_color_map)
 
         # Map and players
-        self.map_widget = MapWidget(self.main_window)
+        self.map_widget = MapWidget(self)
         self.players_last_action_label = QLabel()
         self.players_last_action_label.setFixedWidth(self.PlayersLabelWidth)
         self.map_and_players = QHBoxLayout()
@@ -56,7 +56,7 @@ class GameplayWidget(QWidget):
         self.setLayout(self.general_layout)
 
         # Signals
-        self.draw_cards_button.clicked.connect(self.draw_cards)
+        self.draw_cards_button.clicked.connect(self.next_player)
         self.show_color_map.toggled.connect(self.toggle_maps)
 
 
@@ -113,16 +113,31 @@ class GameplayWidget(QWidget):
 
         # Run AI if it's its turn
         if type(self.current_player) == AI:
-            self.current_player.take_turn()
-
-
-    def draw_cards(self):
-        """ Makes AI draw cards if it's its turn, and goes to next player regardless. """
-        self.next_player()
+            possible_route = self.current_player.take_turn()
+            if type(possible_route) == Edge:
+                self.buy_route(possible_route)
 
 
     def buy_route(self, route: Edge):
         """ Buys the specified route for self.current_player. """
+        if type(self.current_player) == AI:
+            # Check if they can buy tunnel
+            if route.track_type == TrackType.tunnel:
+                pass
+
+            # Take cards for route
+            self.current_player.hand[Color.locomotive] -= route.locomotive_count
+            self.current_player.hand[route.color] -= route.length - route.locomotive_count
+            if self.current_player.hand[route.color] < 0:
+                self.current_player.hand[Color.locomotive] -= abs(self.current_player.hand[route.color])
+                self.current_player.hand[route.color] = 0
+
+        # Buy route
+        route.bought_by = self.current_player
+        self.current_player.train_count -= route.length
+
+        # Display bought route
+        pass
 
         # Stop loop if we reached the final round
         if self.current_player.train_count <= 2:

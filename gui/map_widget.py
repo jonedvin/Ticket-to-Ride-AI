@@ -14,11 +14,11 @@ class MapType(enum.Enum):
 class MapWidget(QWidget):
     CityRadius = 25
 
-    def __init__(self, main_window, map: Map = None, *args, **kwargs):
+    def __init__(self, gameplay_widget, map: Map = None, *args, **kwargs):
         """ Class for displaying the map. """
         super().__init__(*args, **kwargs)
 
-        self.main_window = main_window
+        self.gameplay_widget = gameplay_widget
         self.map = None
         if map:
             self.init_with_map()
@@ -57,6 +57,7 @@ class MapWidget(QWidget):
         for edge in self.map.edges:
             if edge.hex_id == color:
                 print(edge)
+                self.gameplay_widget.buy_route(edge)
 
         return super().mousePressEvent(event)
 
