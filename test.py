@@ -1,7 +1,4 @@
-def func(num: int):
-    if num % 2 == 0:
-        return num
-    return
+names = ["Jon", "Sheila", "ai"]
 
-num = func(3)
-print(type(num))
+for name in names:
+    print(f"{name+':': <10} something")

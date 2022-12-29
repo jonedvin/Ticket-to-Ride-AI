@@ -21,5 +21,4 @@ TODO:
 - Make sure the game flow is done
 - Add undo button
 
-- Finish GameplayWidget.update_players_last_action_label
 - Show trains on bought routes in the GUI

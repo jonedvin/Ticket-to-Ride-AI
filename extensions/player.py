@@ -12,7 +12,6 @@ class PlayerColor(enum.Enum):
 
 
 class LastAction(enum.Enum):
-    drew_tickets = enum.auto()
     drew_cards = enum.auto()
     bought_route = enum.auto()
 
@@ -23,6 +22,7 @@ class Player():
         self.name = name
         self.color = color
         self.train_count = train_count
+        self.last_action = None
     
     def __repr__(self):
         return f"{self.name}, {self.color}, {self.train_count} trains left"
@@ -42,8 +42,6 @@ class AI(Player):
         for color_ in Color:
             self.hand[color_] = 0
 
-        self.last_action = None
-
 
     def draw_cards(self, count: int = 2):
         """ Adds count random cards to self.hand. """
@@ -54,7 +52,7 @@ class AI(Player):
 
     def draw_tickets(self):
         """ Draws tickets and picks which ones to keep. """
-        self.last_action = LastAction.drew_tickets
+        self.last_action = LastAction.drew_cards
         pass
 
 
@@ -160,6 +158,7 @@ class AI(Player):
                 continue
 
             # Have enough cards to buy route
+            self.last_action = LastAction.bought_route
             return route
     
         # Draw cards if we can't buy a route

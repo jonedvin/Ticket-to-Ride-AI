@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QStackedLayout
 from PyQt6.QtGui import QMouseEvent, QPixmap, QColor, QImage
 from extensions.maps import Map
+from extensions.player import AI
 import numpy as np
 import enum
 import os
@@ -33,7 +34,9 @@ class MapWidget(QWidget):
 
 
     def mousePressEvent(self, event: QMouseEvent):
-        ##### Get position and find route ########
+        if type(self.gameplay_widget.current_player) == AI:
+            return super().mousePressEvent(event)
+
         clicked_x = event.pos().x()
         clicked_y = event.pos().y()
 
@@ -57,7 +60,14 @@ class MapWidget(QWidget):
         for edge in self.map.edges:
             if edge.hex_id == color:
                 print(edge)
+
+                # Cannot buy route that's already bought
+                if edge.bought_by:
+                    break
+
+                # Buy route
                 self.gameplay_widget.buy_route(edge)
+                break
 
         return super().mousePressEvent(event)
 
@@ -65,7 +75,6 @@ class MapWidget(QWidget):
     def init_with_map(self, map: Map):
         """ Initializes the widget based on given map. """
         self.map = map
-        self.setFixedSize(map.width, map.height)
 
         self.pretty_canvas = QPixmap(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "maps", map.filename))
         self.pretty_label.setPixmap(self.pretty_canvas)
@@ -73,3 +82,5 @@ class MapWidget(QWidget):
         self.color_canvas = QPixmap(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "maps", map.color_filename))
         self.color_label.setPixmap(self.color_canvas)
         self.color_img = QImage(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "maps", map.color_filename))
+
+        self.setFixedSize(self.pretty_canvas.rect().width(), self.pretty_canvas.rect().height())
