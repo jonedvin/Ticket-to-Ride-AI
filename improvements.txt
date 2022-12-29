@@ -15,11 +15,11 @@ Only buy tickets if there's more than X trains left for each player
 
 
 TODO:
-- Choose tickets
-- Game flow
-- Buy route
-- Finish game
-- Player.buy_route tunnel check
+- Make AI.draw_tickets(self, max_tickets: int, min_tickets: int)
+- Make buy_route function for all, and place it appropriately
+- Add tunnel check to buy_route
+- Add functionality for finishing the game
+- Make sure the game flow is done
 
-- GUI for trains
-- Finish update_players_last_action_label
+- Show trains on bought routes in the GUI
+- Finish GameplayWidget.update_players_last_action_label
