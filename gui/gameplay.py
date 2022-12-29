@@ -6,6 +6,8 @@ from gui.map_widget import MapWidget, MapType
 
 
 class GameplayWidget(QWidget):
+    PlayersLabelWidth = 150
+
     def __init__(self, main_window, *args, **kwargs):
         """ Class for displaying the main gameplay screen. """
         super().__init__(*args, **kwargs)
@@ -24,15 +26,19 @@ class GameplayWidget(QWidget):
         self.player_button_line.addStretch()
         self.player_button_line.addWidget(self.show_color_map)
 
-        # Map
+        # Map and players
         self.map_widget = MapWidget(self.main_window)
+        self.players_last_action_label = QLabel()
+        self.players_last_action_label.setFixedWidth(self.PlayersLabelWidth)
+        self.map_and_players = QHBoxLayout()
+        self.map_and_players.addWidget(self.map_widget)
+        self.map_and_players.addWidget(self.players_last_action_label)
 
         self.general_layout = QVBoxLayout()
         self.general_layout.setContentsMargins(10, 0, 0, 0)
         self.general_layout.addLayout(self.player_button_line)
         self.general_layout.addWidget(self.map_widget)
         self.setLayout(self.general_layout)
-
 
         # Signals
         self.draw_cards_button.clicked.connect(self.draw_cards)
@@ -44,6 +50,7 @@ class GameplayWidget(QWidget):
         self.game = game
         self.update_current_player_label()
         self.map_widget.init_with_map(self.game.map)
+        self.main_window.setFixedSize(self.map_widget.map.width+self.PlayersLabelWidth, self.map_widget.map.height+100)
 
 
     def toggle_maps(self):
@@ -57,6 +64,12 @@ class GameplayWidget(QWidget):
     def update_current_player_label(self):
         """ Updates self.current_player_label to correct name. """
         self.current_player_label.setText(f"{self.game.current_player.name}'s turn")
+
+    
+    def update_players_last_action_label(self):
+        """ Updates self.players_last_action_label. """
+        current_text_list = self.players_last_action_label.text().split("\n")
+        print(current_text_list)
 
 
     def next_player(self):
@@ -76,11 +89,14 @@ class GameplayWidget(QWidget):
         # Update current player label
         self.update_current_player_label()
 
+        # Run AI if it's its turn
+        if type(self.game.current_player) == AI:
+            self.game.current_player.take_turn()
+
+
 
     def draw_cards(self):
         """ Makes AI draw cards if it's its turn, and goes to next player regardless. """
-        if type(self.game.current_player) == AI:
-            self.game.current_player.draw_cards()
         self.next_player()
 
 

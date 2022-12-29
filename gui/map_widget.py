@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QStackedLayout
-from PyQt6.QtGui import QMouseEvent, QPixmap, QPainter, QPen, QColor, QImage
-from PyQt6.QtCore import QPoint
+from PyQt6.QtGui import QMouseEvent, QPixmap, QColor, QImage
 from extensions.maps import Map
 import numpy as np
 import enum
@@ -66,7 +65,6 @@ class MapWidget(QWidget):
         """ Initializes the widget based on given map. """
         self.map = map
         self.setFixedSize(map.width, map.height)
-        self.main_window.setFixedSize(map.width, map.height+100)
 
         self.pretty_canvas = QPixmap(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "maps", map.filename))
         self.pretty_label.setPixmap(self.pretty_canvas)

@@ -1,5 +1,6 @@
 from extensions.graph import Node, Edge, Color, TrackType
 from extensions.cards import Ticket
+from extensions.player import Player
 
 
 class InvalidGame(Exception):

@@ -1,0 +1,24 @@
+Optimize find possible routes
+    '- expanding max distance
+    '- A*
+
+Don't try tunnels unless you have an extra card
+
+Buy routes based on opponents predicted path
+
+Smarter usage of cards on hand
+
+Only buy tickets if there's more than X trains left for each player
+
+
+
+
+
+TODO:
+- Choose tickets
+- Game flow
+- Buy route
+- Finish game
+
+- GUI for trains
+- Finish update_players_last_action_label

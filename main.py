@@ -31,26 +31,26 @@ if __name__ == "__main__":
     window.window_stack.setCurrentIndex(1)
 
     # AI testig block
-    stockholm = None
-    essen = None
-    petrograd = None
-    wien = None
-    for node in window.gameplay_widget.map_widget.map.nodes:
-        if node.name == "Stockholm":
-            stockholm = node
-        elif node.name == "Essen":
-            essen = node
-        elif node.name == "Petrograd":
-            petrograd = node
-        elif node.name == "Wien":
-            wien = node
+    # stockholm = None
+    # essen = None
+    # petrograd = None
+    # wien = None
+    # for node in window.gameplay_widget.map_widget.map.nodes:
+    #     if node.name == "Stockholm":
+    #         stockholm = node
+    #     elif node.name == "Essen":
+    #         essen = node
+    #     elif node.name == "Petrograd":
+    #         petrograd = node
+    #     elif node.name == "Wien":
+    #         wien = node
 
-    ai.tickets.append(Ticket(essen, petrograd, 15))
-    ai.tickets.append(Ticket(wien, petrograd, 17))
-    ai.find_optimal_path_set()
-    print()
-    print("Best path:")
-    print(ai.best_path_set)
+    # ai.tickets.append(Ticket(essen, petrograd, 15))
+    # ai.tickets.append(Ticket(wien, petrograd, 17))
+    # ai.find_optimal_path_set()
+    # print()
+    # print("Best path:")
+    # print(ai.best_path_set)
 
-    # window.show()
-    # sys.exit(app.exec())
+    window.show()
+    sys.exit(app.exec())
