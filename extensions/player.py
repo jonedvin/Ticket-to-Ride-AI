@@ -14,6 +14,7 @@ class PlayerColor(enum.Enum):
 class LastAction(enum.Enum):
     drew_cards = enum.auto()
     bought_route = enum.auto()
+    failed_tunnel = enum.auto()
 
 
 class Player():
@@ -123,6 +124,20 @@ class AI(Player):
         self.best_path_set = PathSet()
         self.get_best_combination(possibilities, PathSet())
 
+    
+    def has_enough_trains(self, route: Edge, extra_count: int = 0):
+        """ Returns True if AI has enough trains to buy the route, False if not. """
+        # Enough locomotives?
+        if self.hand[Color.locomotive] < route.locomotive_count:
+            return False
+
+        # Enough other cards?
+        extra_locomotives = self.hand[Color.locomotive] - route.locomotive_count
+        if self.hand[route.color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
+            return False
+
+        return True
+
 
     def take_turn(self):
         """
@@ -148,13 +163,7 @@ class AI(Player):
             if route.bought_by:
                 continue
 
-            # Enough locomotives?
-            if self.hand[Color.locomotive] < route.locomotive_count:
-                continue
-
-            # Enough other cards?
-            extra_locomotives = self.hand[Color.locomotive] - route.locomotive_count
-            if self.hand[route.color] + extra_locomotives < route.length - route.locomotive_count:
+            if not self.has_enough_trains():
                 continue
 
             # Have enough cards to buy route

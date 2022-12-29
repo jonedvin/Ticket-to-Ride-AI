@@ -4,6 +4,7 @@ from extensions.player import AI, Player, LastAction
 from extensions.graph import Edge, TrackType, Color
 from extensions.maps import Map
 from gui.map_widget import MapWidget, MapType
+import random
 
 
 class GameplayWidget(QWidget):
@@ -149,10 +150,21 @@ class GameplayWidget(QWidget):
 
     def buy_route(self, route: Edge):
         """ Buys the specified route for self.current_player. """
+        # AI block
         if type(self.current_player) == AI:
+
             # Check if they can buy tunnel
             if route.track_type == TrackType.tunnel:
-                pass
+                extra_count = 0
+                for i in range(3):
+                    if Color(random.randint(1, len(Color))) == route.color:
+                        extra_count += 1
+            
+            if not self.current_player.has_enough_trains(route, extra_count=extra_count):
+                self.current_player.last_action = LastAction.failed_tunnel
+                self.next_player()
+                return
+
 
             # Take cards for route
             self.current_player.hand[Color.locomotive] -= route.locomotive_count
@@ -172,4 +184,5 @@ class GameplayWidget(QWidget):
         if self.current_player.train_count <= 2:
             self.last_player = self.current_player
 
+        self.current_player.last_action = LastAction.bought_route
         self.next_player()

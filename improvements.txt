@@ -15,7 +15,6 @@ Only buy tickets if there's more than X trains left for each player
 
 
 TODO:
-- Add tunnel check to buy_route
 - Make AI.draw_tickets(self, max_tickets: int, min_tickets: int)
 - Add functionality for finishing the game
 - Make sure the game flow is done

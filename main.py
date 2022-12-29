@@ -7,18 +7,7 @@ import sys
 
 
 if __name__ == "__main__":
-
-    # Start game
-    # map = Map("Europe")
-    # game = Game(players, map)
-    # game.run()
-
-
-
-    ##### GUI #######################################
     app = QApplication(sys.argv)
-
-    # Start app
     window = MainWindow(app)
 
     # Testing block
@@ -42,7 +31,6 @@ if __name__ == "__main__":
     #         petrograd = node
     #     elif node.name == "Wien":
     #         wien = node
-
     # ai.tickets.append(Ticket(essen, petrograd, 15))
     # ai.tickets.append(Ticket(wien, petrograd, 17))
     # ai.find_optimal_path_set()
