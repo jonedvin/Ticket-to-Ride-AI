@@ -125,8 +125,8 @@ class GameplayWidget(QWidget):
         # If the game is done
         if self.last_player:
             if self.current_player == self.last_player:
-                pass
-                # Finish game
+                self.main_window.result_widget.show_results(self.players, self.map.edges)
+                # self.main_window.window_stack.setCurrentIndex(2)
 
         # Set next player
         next_index = self.players.index(self.current_player)+1

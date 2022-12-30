@@ -1,12 +1,14 @@
 from PyQt6.QtWidgets import QWidget, QStackedLayout, QMainWindow
 from gui.selection_menu import SelectionMenu
 from gui.gameplay import GameplayWidget
+from gui.result_widget import ResultWidget
 import enum
 
 
 class Display(enum.Enum):
     selection = 0
     main = 1
+    result = 2
 
 
 class MainWindow(QMainWindow):
@@ -32,17 +34,16 @@ class MainWindow(QMainWindow):
         # Window stack
         self.selection_widget = SelectionMenu(self)
         self.gameplay_widget = GameplayWidget(self, self.game)
+        self.result_widget = ResultWidget()
         self.window_stack = QStackedLayout()
         self.window_stack.addWidget(self.selection_widget)
         self.window_stack.addWidget(self.gameplay_widget)
+        self.window_stack.addWidget(self.result_widget)
 
         # Build window
         self.central_widget = QWidget(self)
         self.central_widget.setLayout(self.window_stack)
         self.setCentralWidget(self.central_widget)
-
-
-        # Signals
 
 
 
