@@ -12,9 +12,15 @@ Only buy tickets if there's more than X trains left for each player
 
 Make AI.draw_tickets combine tickets if more than one is to be drawn
 
+AI should prioritize using locomotives where they're necessary
+
+AI must not draw grey, using other colors instead on these routes 
+
 
 
 
 TODO:
+- Set ticket to complete when done
 - AI.draw_tickets: replace sorting block with sorted function 
+- Deal with destinations being impossible to reach
 - Add undo button

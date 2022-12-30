@@ -16,14 +16,14 @@ class MainWindow(QMainWindow):
     WindowWidth = 1100
     WindowHeight = 600
 
-    def __init__(self, app):
+    def __init__(self, app, debug: bool = False):
         """
         The main window of the application.
         """
         super().__init__()
 
         self.app = app
-        self.game = None
+        self.debug = debug
 
         # Window parametres
         self.setWindowTitle('AdminGUI')
@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
 
         # Window stack
         self.selection_widget = SelectionMenu(self)
-        self.gameplay_widget = GameplayWidget(self, self.game)
+        self.gameplay_widget = GameplayWidget(self)
         self.result_widget = ResultWidget()
         self.window_stack = QStackedLayout()
         self.window_stack.addWidget(self.selection_widget)

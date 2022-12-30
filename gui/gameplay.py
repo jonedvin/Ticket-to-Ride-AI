@@ -77,6 +77,7 @@ class GameplayWidget(QWidget):
 
             if type(player) == AI:
                 player.set_gameplay_widget(self)
+                player.draw_tickets(max_tickets=5, min_tickets=2)
 
         self.update_current_player_label()
         self.update_players_last_action_label()
@@ -108,6 +109,19 @@ class GameplayWidget(QWidget):
         for player in self.players:
             last_action = player.last_action.name if player.last_action else ""
             text += f"{player.name+':': <10} {last_action}\n"
+        
+        # Show AI tickets and hand if debugging
+        for player in self.players:
+            if type(player) == AI and self.main_window.debug:
+                text += f"\n\n{player.name}:"
+
+                for ticket in player.tickets:
+                    text += f"\n{ticket}"
+                
+                text += "\n"
+                for color, count in player.hand.items():
+                    text += f"\n{color}: {count}"
+
         self.players_last_action_label.setText(text)
 
 
@@ -157,8 +171,8 @@ class GameplayWidget(QWidget):
         if type(self.current_player) == AI:
 
             # Check if they can buy tunnel
+            extra_count = 0
             if route.track_type == TrackType.tunnel:
-                extra_count = 0
                 for i in range(3):
                     if Color(random.randint(1, len(Color))) == route.color:
                         extra_count += 1

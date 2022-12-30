@@ -10,4 +10,4 @@ class Ticket():
         self.is_completed = False
 
     def __repr__(self):
-        return f"Ticket: {self.start_node} -> {self.end_node}, {self.points} points"
+        return f"{self.start_node} -> {self.end_node}, {self.points} points"

@@ -185,5 +185,10 @@ class Map():
         self.edges.append(Edge([petrograd, moskva], Color.white, 4, "#bc491d"))
 
         # Tickets
-        self.tickets.append(Ticket(cadiz, stockholm, 21))  # NOTE: Check this one
+        # NOTE: current tickets are made up
+        self.tickets.append(Ticket(cadiz, stockholm, 21))
+        self.tickets.append(Ticket(paris, danzig, 12))
+        self.tickets.append(Ticket(sofia, smolensk, 13))
+        self.tickets.append(Ticket(london, berlin, 8))
+        self.tickets.append(Ticket(brindisi, angora, 14))
 

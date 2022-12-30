@@ -45,7 +45,7 @@ class Player():
 
 
 class AI(Player):
-    MaxDepth = 20
+    MaxDepth = 21
 
     def __init__(self, name: str, color: PlayerColor, train_count: int):
         """ CLass for the AI. """
@@ -53,8 +53,10 @@ class AI(Player):
         
         self.gameplay_widget = None
 
-        self.tickets = []  # [Ticket]
         self.best_path_set = PathSet()
+        self.best_path_set_temp = None
+
+        self.tickets = []  # [Ticket]
         self.hand = {}  # {Color, int}
         for color_ in Color:
             self.hand[color_] = 0
@@ -80,7 +82,8 @@ class AI(Player):
             # Get optimal paths for all tickets
             tickets_path_set_dict = {}
             for _ in range(max_tickets):
-                ticket = self.gameplay_widget.map.tickets.pop(random.randint(0, len(self.gameplay_widget.map.tickets)-1))
+                # ticket = self.gameplay_widget.map.tickets.pop(random.randint(0, len(self.gameplay_widget.map.tickets)-1))
+                ticket = self.gameplay_widget.map.tickets[0]
                 self.find_optimal_path_set(possible_new_ticket=ticket)
                 tickets_path_set_dict[ticket] = PathSet.copy_from(self.best_path_set_temp)
                 self.best_path_set_temp = None  # Avoid later confusion
@@ -95,6 +98,9 @@ class AI(Player):
                     (path_set.trains_needed == best[1].trains_needed and ticket.points > best[0].points)
                     ):
                     best = (ticket, path_set)
+
+            # Remove taken ticket from list of tickets
+            self.gameplay_widget.map.tickets.remove(best[0])
             
             # Take best found
             self.tickets.append(best[0])
@@ -137,21 +143,23 @@ class AI(Player):
             else:
                 self.find_all_possible_paths(expanded_path.last_node(), end_node, found_paths, expanded_path)
 
+            pass
+
     
-    def get_best_combination(self, possibilities: dict, path_set: PathSet, temp_save: int = False):
+    def get_best_combination(self, possibilities: dict, path_set: PathSet, temp_save: bool = False):
         """ Recursively tests all combinations of possible routes, and saves the best one. """
         for path in possibilities[list(possibilities.keys())[len(path_set.paths)]]:
             extended_path_set = PathSet.copy_from(path_set)
             extended_path_set.add_path(path)
 
             # Don't contunie if it's already too expensive
-            if self.best_path_set.trains_needed != 0:
-                if extended_path_set.trains_needed >= self.best_path_set.trains_needed:
-                    continue
+            if (self.best_path_set.trains_needed != 0 and
+                extended_path_set.trains_needed >= self.best_path_set.trains_needed):
+                continue
 
             # Continue looking if the path set is not complete
-            if len(extended_path_set.paths) != len(possibilities):
-                self.get_best_combination(possibilities, extended_path_set)
+            if len(extended_path_set.paths) < len(possibilities):
+                self.get_best_combination(possibilities, extended_path_set, temp_save=temp_save)
                 return
 
             # Save path set if it's complete and cheaper than prevous best
@@ -159,6 +167,8 @@ class AI(Player):
                 self.best_path_set_temp = extended_path_set
             else:
                 self.best_path_set = extended_path_set
+
+        pass
 
 
     def find_optimal_path_set(self, possible_new_ticket: Ticket = None):
@@ -209,7 +219,7 @@ class AI(Player):
                 completed_all = False
                 break
         if completed_all:
-            self.draw_tickets()
+            self.draw_tickets(max_tickets=3, min_tickets=1)
             return
 
         # Find optimal routes
@@ -221,7 +231,7 @@ class AI(Player):
             if route.bought_by:
                 continue
 
-            if not self.has_enough_trains():
+            if not self.has_enough_trains(route):
                 continue
 
             # Have enough cards to buy route

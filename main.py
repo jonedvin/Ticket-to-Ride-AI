@@ -8,7 +8,7 @@ import sys
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow(app)
+    window = MainWindow(app, debug=True)
 
     # Testing block
     jon = Player("Jon", PlayerColor.black, 42)
