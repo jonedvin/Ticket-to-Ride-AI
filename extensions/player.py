@@ -17,6 +17,15 @@ class LastAction(enum.Enum):
     failed_tunnel = enum.auto()
 
 
+colors_dict = {
+    PlayerColor.red: "#b50505",
+    PlayerColor.blue: "#031c96",
+    PlayerColor.green: "#018347",
+    PlayerColor.yellow: "#f5e905",
+    PlayerColor.black: "#262626"
+}
+
+
 class Player():
     def __init__(self, name: str, color: PlayerColor, train_count: int):
         """ Class for representing a player. """
@@ -27,6 +36,10 @@ class Player():
     
     def __repr__(self):
         return f"{self.name}, {self.color}, {self.train_count} trains left"
+
+    @property
+    def get_color(self):
+        return colors_dict[self.color]
 
 
 

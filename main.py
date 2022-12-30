@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     # Testing block
     jon = Player("Jon", PlayerColor.black, 42)
-    sheila = Player("Sheila", PlayerColor.yellow, 42)
+    sheila = Player("Sheila", PlayerColor.red, 42)
     ai = AI("AI", PlayerColor.green, 42)
     window.gameplay_widget.init_game([jon, sheila, ai], Map("Europe"))
     window.window_stack.setCurrentIndex(1)

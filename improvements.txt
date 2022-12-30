@@ -19,5 +19,3 @@ TODO:
 - Add functionality for finishing the game
 - Make sure the game flow is done
 - Add undo button
-
-- Show trains on bought routes in the GUI

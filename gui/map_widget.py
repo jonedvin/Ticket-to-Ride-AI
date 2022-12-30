@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QStackedLayout
-from PyQt6.QtGui import QMouseEvent, QPixmap, QColor, QImage
+from PyQt6.QtGui import QMouseEvent, QPixmap, QColor, QImage, QPainter, QPen
 from extensions.maps import Map
-from extensions.player import AI
+from extensions.player import AI, Player
+from extensions.graph import Edge
 import numpy as np
 import enum
 import os
@@ -14,6 +15,7 @@ class MapType(enum.Enum):
 
 class MapWidget(QWidget):
     CityRadius = 25
+    FillRouteMargin = 100
 
     def __init__(self, gameplay_widget, map: Map = None, *args, **kwargs):
         """ Class for displaying the map. """
@@ -70,6 +72,24 @@ class MapWidget(QWidget):
                 break
 
         return super().mousePressEvent(event)
+
+
+    def draw_bought_route(self, player: Player, route: Edge):
+        """ Colors the route in the shape from self.color_img, on self.pretty_canvas. """
+        painter = QPainter(self.pretty_canvas)
+        painter.setPen(QPen(QColor(player.get_color)))
+
+        min_x = max(min(route.end_nodes[0].x, route.end_nodes[1].x) - self.FillRouteMargin, 0)
+        max_x = min(max(route.end_nodes[0].x, route.end_nodes[1].x) + self.FillRouteMargin, self.map.width)
+        min_y = max(min(route.end_nodes[0].y, route.end_nodes[1].y) - self.FillRouteMargin, 0)
+        max_y = min(max(route.end_nodes[0].y, route.end_nodes[1].y) + self.FillRouteMargin, self.map.height)
+
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if QColor(self.color_img.pixel(x, y)).name() == route.hex_id:
+                    painter.drawPoint(x, y)
+
+        self.pretty_label.setPixmap(self.pretty_canvas)
 
 
     def init_with_map(self, map: Map):

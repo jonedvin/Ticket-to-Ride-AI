@@ -178,7 +178,7 @@ class GameplayWidget(QWidget):
         self.current_player.train_count -= route.length
 
         # Display bought route
-        pass
+        self.map_widget.draw_bought_route(self.current_player, route)
 
         # Stop loop if we reached the final round
         if self.current_player.train_count <= 2:
