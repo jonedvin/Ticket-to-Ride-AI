@@ -34,6 +34,7 @@ class Player():
         self.color = color
         self.train_count = train_count
         self.last_action = None
+        self.bought_routes = []  # [Edge]
     
     def __repr__(self):
         return f"{self.name}, {self.color}, {self.train_count} trains left"

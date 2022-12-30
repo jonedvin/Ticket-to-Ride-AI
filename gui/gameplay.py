@@ -193,6 +193,7 @@ class GameplayWidget(QWidget):
         # Buy route
         route.bought_by = self.current_player
         self.current_player.train_count -= route.length
+        self.current_player.bought_routes.append(route)
 
         # Display bought route
         self.map_widget.draw_bought_route(self.current_player, route)
@@ -200,6 +201,13 @@ class GameplayWidget(QWidget):
         # Stop loop if we reached the final round
         if self.current_player.train_count <= 2:
             self.last_player = self.current_player
+
+        # Check if AI has finished any tickets with this buy
+        if type(self.current_player) == AI:
+            for ticket in self.current_player.tickets:
+                if not ticket.is_completed:
+                    ticket.is_returning = False
+                    ticket.check_if_complete(self.current_player)
 
         self.current_player.last_action = LastAction.bought_route
         self.next_player()

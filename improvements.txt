@@ -14,7 +14,11 @@ Make AI.draw_tickets combine tickets if more than one is to be drawn
 
 AI should prioritize using locomotives where they're necessary
 
-AI must not draw grey, using other colors instead on these routes 
+AI must not draw grey, using other colors instead on these routes
+
+Improve ticket complete check -> store ticket path?
+
+Look for better way of stopping all recursive calls of function
 
 
 
@@ -24,3 +28,8 @@ TODO:
 - AI.draw_tickets: replace sorting block with sorted function 
 - Deal with destinations being impossible to reach
 - Add undo button
+
+
+Seems to be able to notice when it's completed a ticket
+For some reason buys irrelevant routes sometimes 
+    - (when working on the 3rd ticket, it bought routes further connecting the first two routes)
