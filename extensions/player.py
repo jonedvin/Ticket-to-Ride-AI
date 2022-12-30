@@ -1,4 +1,5 @@
 from extensions.graph import Color, Node, Path, PathSet, Edge, TrackType
+from extensions.cards import Ticket
 import random
 import enum
 
@@ -49,12 +50,18 @@ class AI(Player):
     def __init__(self, name: str, color: PlayerColor, train_count: int):
         """ CLass for the AI. """
         super().__init__(name, color, train_count)
+        
+        self.gameplay_widget = None
 
         self.tickets = []  # [Ticket]
         self.best_path_set = PathSet()
         self.hand = {}  # {Color, int}
         for color_ in Color:
             self.hand[color_] = 0
+
+    def set_gameplay_widget(self, widget):
+        """ Sets the gameplay widget. Must be run before self.draw_tickets can be run. """
+        self.gameplay_widget = widget
 
 
     def draw_cards(self, count: int = 2):
@@ -64,10 +71,35 @@ class AI(Player):
             self.hand[Color(random.randint(1, len(Color)))] += 1
 
 
-    def draw_tickets(self):
+    def draw_tickets(self, max_tickets: int, min_tickets: int):
         """ Draws tickets and picks which ones to keep. """
         self.last_action = LastAction.drew_cards
-        pass
+
+        for _ in range(min_tickets):
+
+            # Get optimal paths for all tickets
+            tickets_path_set_dict = {}
+            for _ in range(max_tickets):
+                ticket = self.gameplay_widget.map.tickets.pop(random.randint(0, len(self.gameplay_widget.map.tickets)-1))
+                self.find_optimal_path_set(possible_new_ticket=ticket)
+                tickets_path_set_dict[ticket] = PathSet.copy_from(self.best_path_set_temp)
+                self.best_path_set_temp = None  # Avoid later confusion
+
+            # Get best ones
+            best = (None, None)
+            for ticket, path_set in tickets_path_set_dict.items():
+                if not best[0]:
+                    best = (ticket, path_set)
+                    continue
+                if (path_set.trains_needed < best[1].trains_needed or
+                    (path_set.trains_needed == best[1].trains_needed and ticket.points > best[0].points)
+                    ):
+                    best = (ticket, path_set)
+            
+            # Take best found
+            self.tickets.append(best[0])
+            self.best_path_set = best[1]
+
 
 
     def find_all_possible_paths(self, start_node: Node, end_node: Node, found_paths: list[Path], current_path: Path = None):
@@ -106,7 +138,7 @@ class AI(Player):
                 self.find_all_possible_paths(expanded_path.last_node(), end_node, found_paths, expanded_path)
 
     
-    def get_best_combination(self, possibilities: dict, path_set: PathSet):
+    def get_best_combination(self, possibilities: dict, path_set: PathSet, temp_save: int = False):
         """ Recursively tests all combinations of possible routes, and saves the best one. """
         for path in possibilities[list(possibilities.keys())[len(path_set.paths)]]:
             extended_path_set = PathSet.copy_from(path_set)
@@ -117,14 +149,19 @@ class AI(Player):
                 if extended_path_set.trains_needed >= self.best_path_set.trains_needed:
                     continue
 
-            # Set as best if it's a full combination
-            if len(extended_path_set.paths) == len(possibilities):
-                self.best_path_set = extended_path_set
-            else:
+            # Continue looking if the path set is not complete
+            if len(extended_path_set.paths) != len(possibilities):
                 self.get_best_combination(possibilities, extended_path_set)
+                return
+
+            # Save path set if it's complete and cheaper than prevous best
+            if temp_save:
+                self.best_path_set_temp = extended_path_set
+            else:
+                self.best_path_set = extended_path_set
 
 
-    def find_optimal_path_set(self):
+    def find_optimal_path_set(self, possible_new_ticket: Ticket = None):
         """ Finds the combination of paths for each ticket that combine to the least used trains. """
         # Find all possible paths for all tickets
         possibilities = {}
@@ -133,9 +170,17 @@ class AI(Player):
             self.find_all_possible_paths(ticket.start_node, ticket.end_node, found_paths=found_paths)
             possibilities[ticket] = [path for path in found_paths]
 
+        # Add possible ticket if given
+        temp_save = False
+        if possible_new_ticket:
+            temp_save = True
+            found_paths = []
+            self.find_all_possible_paths(possible_new_ticket.start_node, possible_new_ticket.end_node, found_paths=found_paths)
+            possibilities[possible_new_ticket] = [path for path in found_paths]
+
         # Find best combination
         self.best_path_set = PathSet()
-        self.get_best_combination(possibilities, PathSet())
+        self.get_best_combination(possibilities, PathSet(), temp_save=temp_save)
 
     
     def has_enough_trains(self, route: Edge, extra_count: int = 0):

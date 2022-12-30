@@ -10,11 +10,11 @@ Smarter usage of cards on hand
 
 Only buy tickets if there's more than X trains left for each player
 
+Make AI.draw_tickets combine tickets if more than one is to be drawn
 
 
 
 
 TODO:
-- Make AI.draw_tickets(self, max_tickets: int, min_tickets: int)
-- Make sure the game flow is done
+- AI.draw_tickets: replace sorting block with sorted function 
 - Add undo button

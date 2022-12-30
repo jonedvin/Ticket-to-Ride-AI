@@ -75,6 +75,9 @@ class GameplayWidget(QWidget):
         for player in players:
             self.longest_name_count = max(len(player.name), self.longest_name_count)
 
+            if type(player) == AI:
+                player.set_gameplay_widget(self)
+
         self.update_current_player_label()
         self.update_players_last_action_label()
         self.map_widget.init_with_map(self.map)
