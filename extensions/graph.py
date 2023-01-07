@@ -90,6 +90,11 @@ class Path():
             text += f"{node} -> "
         return text[:-4]
 
+    def __eq__(self, other):
+        return self.__repr__() == other.__repr__()
+
+    def __ne__(self, other):
+        return self.__repr__() != other.__repr__()
 
     @classmethod
     def copy(cls, original):
@@ -100,14 +105,29 @@ class Path():
         self.nodes = [node for node in original.nodes]
         self.length = original.length
 
+        self.necessary_color_count = {}
+        for color, count in original.necessary_color_count.items():
+            self.necessary_color_count[color] = count
+
         return self
 
+    
+    def remaining_length(self, player):
+        l = 0
+        for edge in self.edges:
+            if edge.bought_by:
+                if edge.bought_by == player:
+                    continue
+            l += edge.length
+        return l
 
-    def add_edge(self, edge: Edge):
+
+    def add_edge(self, edge: Edge, already_bought: bool = False):
         """ Adds an edge to the path. """
         # Add edge and length
         self.edges.append(edge)
-        self.length += edge.length
+        if not already_bought:
+            self.length += edge.length
 
         # Add new node
         for node in edge.end_nodes:
@@ -147,6 +167,14 @@ class PathSet():
         total = 0
         for route in self.routes_included:
             total += route.length
+        return total
+
+    @property
+    def additional_trains_needed(self):
+        total = 0
+        for route in self.routes_included:
+            if not route.bought_by:
+                total += route.length
         return total
 
     def add_path(self, path: Path):

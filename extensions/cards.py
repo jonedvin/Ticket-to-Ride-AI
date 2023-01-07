@@ -11,7 +11,7 @@ class Ticket():
         self.is_returning = False  # Used to return quickly in check_if_complete if route was found 
 
     def __repr__(self):
-        completed = "X" if self.is_completed else "_"
+        completed = "X" if self.is_completed else "  "
         return f"{completed} {self.start_node} -> {self.end_node}, {self.points} points"
         
     def check_if_complete(self, player, start_node: Node = None, current_path: Path = None):

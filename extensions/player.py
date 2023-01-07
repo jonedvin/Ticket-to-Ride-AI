@@ -92,11 +92,11 @@ class AI(Player):
             # Get best ones
             best = (None, None)
             for ticket, path_set in tickets_path_set_dict.items():
-                if not best[0]:
+                if best == (None, None):
                     best = (ticket, path_set)
                     continue
-                if (path_set.trains_needed < best[1].trains_needed or
-                    (path_set.trains_needed == best[1].trains_needed and ticket.points > best[0].points)
+                if (path_set.additional_trains_needed < best[1].additional_trains_needed or
+                    (path_set.additional_trains_needed == best[1].additional_trains_needed and ticket.points > best[0].points)
                     ):
                     best = (ticket, path_set)
 
@@ -113,7 +113,7 @@ class AI(Player):
         """
         Fills the found_paths list with all possible paths for player between start_node and end_nodes.
         """
-        print(current_path)
+        # print(current_path)
         # Init paths
         if not current_path:
             current_path = Path(start_node)
@@ -121,8 +121,11 @@ class AI(Player):
         for edge in start_node.edges:
 
             # Can't cross edges bought by others
+            already_bought = False
             if edge.bought_by:
-                if edge.bought_by != self:
+                if edge.bought_by == self:
+                    already_bought = True
+                else:
                     continue
 
             # Don't go in circles
@@ -136,15 +139,14 @@ class AI(Player):
 
             # Copy path and add edge
             expanded_path = Path.copy(current_path)
-            expanded_path.add_edge(edge)
+            expanded_path.add_edge(edge, already_bought=already_bought)
 
             # Add completed path or continue
             if edge.other_node(start_node) == end_node:
-                found_paths.append(expanded_path)
+                if expanded_path not in found_paths:
+                    found_paths.append(expanded_path)
             else:
                 self.find_all_possible_paths(expanded_path.last_node(), end_node, found_paths, expanded_path)
-
-            pass
 
     
     def get_best_combination(self, possibilities: dict, path_set: PathSet, temp_save: bool = False):
@@ -176,10 +178,22 @@ class AI(Player):
         """ Finds the combination of paths for each ticket that combine to the least used trains. """
         # Find all possible paths for all tickets
         possibilities = {}
+        for_loop_count = -1
         for ticket in self.tickets:
+            for_loop_count += 1
+
+            if ticket.is_completed:
+                continue
+
             found_paths = []
             self.find_all_possible_paths(ticket.start_node, ticket.end_node, found_paths=found_paths)
             possibilities[ticket] = [path for path in found_paths]
+            
+            sorted_paths = sorted(found_paths, key = lambda path: path.length)
+            print()
+            print(ticket, for_loop_count)
+            for path in sorted_paths:
+                print(path)
 
         # Add possible ticket if given
         temp_save = False
@@ -194,8 +208,8 @@ class AI(Player):
         self.get_best_combination(possibilities, PathSet(), temp_save=temp_save)
 
     
-    def has_enough_trains(self, route: Edge, extra_count: int = 0):
-        """ Returns True if AI has enough trains to buy the route, False if not. """
+    def has_enough_cards(self, route: Edge, extra_count: int = 0):
+        """ Returns True if AI has enough cards to buy the route, False if not. """
         # Enough locomotives?
         if self.hand[Color.locomotive] < route.locomotive_count:
             return False
@@ -228,14 +242,16 @@ class AI(Player):
 
         # Try to buy a route
         for route in self.best_path_set.routes_included:
-            # Route already bought?
+
             if route.bought_by:
                 continue
 
-            if not self.has_enough_trains(route):
+            if self.train_count < route.length:
                 continue
 
-            # Have enough cards to buy route
+            if not self.has_enough_cards(route):
+                continue
+
             self.last_action = LastAction.bought_route
             return route
     

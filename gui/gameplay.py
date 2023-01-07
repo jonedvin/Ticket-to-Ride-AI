@@ -110,17 +110,25 @@ class GameplayWidget(QWidget):
             last_action = player.last_action.name if player.last_action else ""
             text += f"{player.name+':': <10} {last_action}\n"
         
-        # Show AI tickets and hand if debugging
+        # Show AI tickets and hand and routes if debugging
         for player in self.players:
             if type(player) == AI and self.main_window.debug:
                 text += f"\n\n{player.name}:"
 
+                # Tickets
                 for ticket in player.tickets:
                     text += f"\n{ticket}"
                 
+                # Hand
                 text += "\n"
                 for color, count in player.hand.items():
                     text += f"\n{color}: {count}"
+
+                text += "\n"
+                # Routes
+                for route in player.best_path_set.routes_included:
+                    bought = "X" if route.bought_by == player else "  "
+                    text += f"\n{bought} {route}"
 
         self.players_last_action_label.setText(text)
 
@@ -143,7 +151,7 @@ class GameplayWidget(QWidget):
         if self.last_player:
             if self.current_player == self.last_player:
                 self.main_window.result_widget.show_results(self.players, self.map.edges)
-                # self.main_window.window_stack.setCurrentIndex(2)
+                # self.main_window.window_stack.setCurrentIndex(2)  # Uncomment this to show result screen at the end
 
         # Set next player
         next_index = self.players.index(self.current_player)+1
@@ -177,7 +185,7 @@ class GameplayWidget(QWidget):
                     if Color(random.randint(1, len(Color))) == route.color:
                         extra_count += 1
             
-            if not self.current_player.has_enough_trains(route, extra_count=extra_count):
+            if not self.current_player.has_enough_cards(route, extra_count=extra_count):
                 self.current_player.last_action = LastAction.failed_tunnel
                 self.next_player()
                 return

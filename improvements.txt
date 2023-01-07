@@ -24,7 +24,6 @@ Look for better way of stopping all recursive calls of function
 
 
 TODO:
-- Set ticket to complete when done
 - AI.draw_tickets: replace sorting block with sorted function 
 - Deal with destinations being impossible to reach
 - Add undo button
@@ -33,3 +32,6 @@ TODO:
 Seems to be able to notice when it's completed a ticket
 For some reason buys irrelevant routes sometimes 
     - (when working on the 3rd ticket, it bought routes further connecting the first two routes)
+Seems to run find_all_possible_paths 5 times - this is correct, as it checks which ticket to take, no?
+I think it needs to see that its bought routes have "length = 0", and not consider finished tickets whatsoever
+Make use of remaining_length
