@@ -172,7 +172,7 @@ class GameplayWidget(QWidget):
         # Run AI if it's its turn
         if type(self.current_player) == AI:
 
-            possible_route = self.current_player.take_turn()
+            possible_route = self.current_player.take_turn(self.map)
             if type(possible_route) == Edge:
                 self.buy_route(possible_route)
             else:

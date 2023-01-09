@@ -1,5 +1,6 @@
 from extensions.graph import Color, Node, Path, PathSet, Edge, TrackType
 from extensions.cards import Ticket
+from extensions.maps import Map
 import random
 import enum
 
@@ -224,8 +225,23 @@ class AI(Player):
 
         return True
 
+    
+    def can_buy_route(self, route: Edge):
+        """ Returns True if route can be bought, False if not. """
+        if route.bought_by:
+            return False
 
-    def take_turn(self):
+        if self.train_count < route.length:
+            return False
+
+        if not self.has_enough_cards(route):
+            return False
+
+        return True
+
+
+
+    def take_turn(self, map: Map):
         """
         AI finds it's best path set, and decides what to do in its turn.\n
         Returns the route to buy if it chooses to buy a route, None if not.
@@ -245,23 +261,22 @@ class AI(Player):
             
             # If we don't have enough trains for tickets, buy random routes for points
             else:
-                return
+                for edge in map.edges:
+                    if not self.can_buy_route(edge):
+                        continue
+                    self.last_action = LastAction.bought_route
+                    return route
+                
+                # If we get here, there's nothing to do, so we draw cards
+                self.draw_cards()
 
         # Find optimal routes
         self.find_optimal_path_set()
 
         # Try to buy a route
         for route in self.best_path_set.routes_included:
-
-            if route.bought_by:
+            if not self.can_buy_route(route):
                 continue
-
-            if self.train_count < route.length:
-                continue
-
-            if not self.has_enough_cards(route):
-                continue
-
             self.last_action = LastAction.bought_route
             return route
     

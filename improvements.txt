@@ -24,8 +24,8 @@ Look for better way of stopping all recursive calls of function
 
 
 TODO:
-- AI should buy random routes if completed all tickets, but don't have enough trains for more ticekts
 - AI.draw_tickets: replace sorting block with sorted function 
 - Grey is not it's own color...
 - Deal with destinations being impossible to reach
 - Add undo button
+- Add AI personality (TicketTrainLimit, longest route tactics etc.)
