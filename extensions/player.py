@@ -1,6 +1,6 @@
 from extensions.graph import Color, Node, Path, PathSet, Edge, TrackType
 from extensions.cards import Ticket
-from extensions.maps import Map
+from collections import OrderedDict
 import random
 import enum
 
@@ -64,10 +64,39 @@ class AI(Player):
         for color_ in Color:
             self.hand[color_] = 0
 
+
     def set_gameplay_widget(self, widget):
         """ Sets the gameplay widget. Must be run before self.draw_tickets can be run. """
         self.gameplay_widget = widget
 
+
+    def has_enough_cards(self, route: Edge, extra_count: int = 0):
+        """ Returns True if AI has enough cards to buy the route, False if not. """
+        # Enough locomotives?
+        if self.hand[Color.locomotive] < route.locomotive_count:
+            return False
+
+        # Enough other cards?
+        extra_locomotives = self.hand[Color.locomotive] - route.locomotive_count
+        if self.hand[route.color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
+            return False
+
+        return True
+
+    
+    def can_buy_route(self, route: Edge):
+        """ Returns True if route can be bought, False if not. """
+        if route.bought_by:
+            return False
+        if self.train_count < route.length:
+            return False
+        if not self.has_enough_cards(route):
+            return False
+        return True
+
+
+
+######## Draw cards functions ####################################################################################
 
     def draw_cards(self, count: int = 2):
         """ Adds count random cards to self.hand. """
@@ -85,23 +114,16 @@ class AI(Player):
             # Get optimal paths for all tickets
             tickets_path_set_dict = {}
             for _ in range(max_tickets):
-                # ticket = self.gameplay_widget.map.tickets.pop(random.randint(0, len(self.gameplay_widget.map.tickets)-1))
                 ticket = self.gameplay_widget.map.tickets[random.randint(0, len(self.gameplay_widget.map.tickets)-1)]
-                # ticket = self.gameplay_widget.map.tickets[0]
-                self.find_optimal_path_set(possible_new_ticket=ticket)
+                self.find_optimal_path_set(possible_new_tickets=[ticket])
                 tickets_path_set_dict[ticket] = PathSet.copy_from(self.best_path_set_temp)
                 self.best_path_set_temp = None  # Avoid later confusion
 
-            # Get best ones
-            best = (None, None)
-            for ticket, path_set in tickets_path_set_dict.items():
-                if best == (None, None):
-                    best = (ticket, path_set)
-                    continue
-                if (path_set.additional_trains_needed < best[1].additional_trains_needed or
-                    (path_set.additional_trains_needed == best[1].additional_trains_needed and ticket.points > best[0].points)
-                    ):
-                    best = (ticket, path_set)
+            # Get best one
+            tickets_path_set_dict = OrderedDict(sorted(tickets_path_set_dict.items(), key=lambda item: item[1].additional_trains_needed))
+            tickets_path_set_dict = OrderedDict(sorted(tickets_path_set_dict.items(), key=lambda item: item[0].points, reverse=True))
+            best_ticket = next(iter(tickets_path_set_dict))
+            best = (best_ticket, tickets_path_set_dict[best_ticket])
 
             # Remove taken ticket from list of tickets
             print(best[0])
@@ -112,6 +134,8 @@ class AI(Player):
             self.best_path_set = best[1]
 
 
+
+######## Best path functions ####################################################################################
 
     def find_all_possible_paths(self, start_node: Node, end_node: Node, found_paths: list[Path], current_path: Path = None):
         """
@@ -175,10 +199,8 @@ class AI(Player):
             else:
                 self.best_path_set = extended_path_set
 
-        pass
 
-
-    def find_optimal_path_set(self, possible_new_ticket: Ticket = None):
+    def find_optimal_path_set(self, possible_new_tickets: list[Ticket] = None):
         """ Finds the combination of paths for each ticket that combine to the least used trains. """
         # Find all possible paths for all tickets
         possibilities = {}
@@ -201,47 +223,22 @@ class AI(Player):
 
         # Add possible ticket if given
         temp_save = False
-        if possible_new_ticket:
+        if possible_new_tickets:
             temp_save = True
-            found_paths = []
-            self.find_all_possible_paths(possible_new_ticket.start_node, possible_new_ticket.end_node, found_paths=found_paths)
-            possibilities[possible_new_ticket] = [path for path in found_paths]
+            for ticket in possible_new_tickets:
+                found_paths = []
+                self.find_all_possible_paths(ticket.start_node, ticket.end_node, found_paths=found_paths)
+                possibilities[ticket] = [path for path in found_paths]
 
         # Find best combination
         self.best_path_set = PathSet()
         self.get_best_combination(possibilities, PathSet(), temp_save=temp_save)
 
-    
-    def has_enough_cards(self, route: Edge, extra_count: int = 0):
-        """ Returns True if AI has enough cards to buy the route, False if not. """
-        # Enough locomotives?
-        if self.hand[Color.locomotive] < route.locomotive_count:
-            return False
-
-        # Enough other cards?
-        extra_locomotives = self.hand[Color.locomotive] - route.locomotive_count
-        if self.hand[route.color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
-            return False
-
-        return True
-
-    
-    def can_buy_route(self, route: Edge):
-        """ Returns True if route can be bought, False if not. """
-        if route.bought_by:
-            return False
-
-        if self.train_count < route.length:
-            return False
-
-        if not self.has_enough_cards(route):
-            return False
-
-        return True
 
 
+######## Gameplay functions ####################################################################################
 
-    def take_turn(self, map: Map):
+    def take_turn(self, map):
         """
         AI finds it's best path set, and decides what to do in its turn.\n
         Returns the route to buy if it chooses to buy a route, None if not.
