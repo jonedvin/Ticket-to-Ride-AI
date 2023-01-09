@@ -108,7 +108,8 @@ class GameplayWidget(QWidget):
         text = ""
         for player in self.players:
             last_action = player.last_action.name if player.last_action else ""
-            text += f"{player.name+':': <10} {last_action}\n"
+            player_name_trains = f"T{player.train_count: <3} {player.name}:"
+            text += f"{player_name_trains: <10} {last_action}\n"
         
         # Show AI tickets and hand and routes if debugging
         for player in self.players:
@@ -123,6 +124,11 @@ class GameplayWidget(QWidget):
                 text += "\n"
                 for color, count in player.hand.items():
                     text += f"\n{color}: {count}"
+
+                # Print paths
+                print()
+                for path in player.best_path_set.paths:
+                    print(path)
 
                 text += "\n"
                 # Routes

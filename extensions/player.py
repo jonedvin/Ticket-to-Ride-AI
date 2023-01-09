@@ -84,7 +84,8 @@ class AI(Player):
             tickets_path_set_dict = {}
             for _ in range(max_tickets):
                 # ticket = self.gameplay_widget.map.tickets.pop(random.randint(0, len(self.gameplay_widget.map.tickets)-1))
-                ticket = self.gameplay_widget.map.tickets[0]
+                ticket = self.gameplay_widget.map.tickets[random.randint(0, len(self.gameplay_widget.map.tickets)-1)]
+                # ticket = self.gameplay_widget.map.tickets[0]
                 self.find_optimal_path_set(possible_new_ticket=ticket)
                 tickets_path_set_dict[ticket] = PathSet.copy_from(self.best_path_set_temp)
                 self.best_path_set_temp = None  # Avoid later confusion
@@ -101,6 +102,7 @@ class AI(Player):
                     best = (ticket, path_set)
 
             # Remove taken ticket from list of tickets
+            print(best[0])
             self.gameplay_widget.map.tickets.remove(best[0])
             
             # Take best found
@@ -156,14 +158,14 @@ class AI(Player):
             extended_path_set.add_path(path)
 
             # Don't contunie if it's already too expensive
-            if (self.best_path_set.trains_needed != 0 and
-                extended_path_set.trains_needed >= self.best_path_set.trains_needed):
+            if (self.best_path_set.additional_trains_needed != 0 and
+                extended_path_set.additional_trains_needed >= self.best_path_set.additional_trains_needed):
                 continue
 
             # Continue looking if the path set is not complete
             if len(extended_path_set.paths) < len(possibilities):
                 self.get_best_combination(possibilities, extended_path_set, temp_save=temp_save)
-                return
+                continue
 
             # Save path set if it's complete and cheaper than prevous best
             if temp_save:
