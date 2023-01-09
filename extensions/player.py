@@ -47,6 +47,7 @@ class Player():
 
 class AI(Player):
     MaxDepth = 21
+    TicketTrainLimit = 8
 
     def __init__(self, name: str, color: PlayerColor, train_count: int):
         """ CLass for the AI. """
@@ -230,14 +231,21 @@ class AI(Player):
         Returns the route to buy if it chooses to buy a route, None if not.
         """
         # Get more tickets if we're out
-        completed_all = True
+        completed_all_tickets = True
         for ticket in self.tickets:
             if not ticket.is_completed:
-                completed_all = False
+                completed_all_tickets = False
                 break
-        if completed_all:
-            self.draw_tickets(max_tickets=3, min_tickets=1)
-            return
+
+        if completed_all_tickets: 
+            # Buy another route if we have enough trains
+            if self.train_count > self.TicketTrainLimit:
+                self.draw_tickets(max_tickets=3, min_tickets=1)
+                return
+            
+            # If we don't have enough trains for tickets, buy random routes for points
+            else:
+                return
 
         # Find optimal routes
         self.find_optimal_path_set()
