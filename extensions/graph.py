@@ -13,8 +13,8 @@ class Color(enum.Enum):
     pink = enum.auto()
     white = enum.auto()
     black = enum.auto()
-    grey = enum.auto()
     locomotive = enum.auto()
+    grey = enum.auto()
 
 
 class Node():

@@ -178,6 +178,21 @@ class GameplayWidget(QWidget):
             else:
                 self.next_player()
 
+    
+    def take_cards_for_route(self, route: Edge, color_to_take: Color = None):
+        """
+        Takes the cards needed to buy a route.\n
+        color_to_take is to be specified if route.color == Color.grey.
+        """
+        if not color_to_take:
+            color_to_take = route.color
+
+        self.current_player.hand[Color.locomotive] -= route.locomotive_count
+        self.current_player.hand[color_to_take] -= route.length - route.locomotive_count
+        if self.current_player.hand[color_to_take] < 0:
+            self.current_player.hand[Color.locomotive] -= abs(self.current_player.hand[color_to_take])
+            self.current_player.hand[color_to_take] = 0
+
 
     def buy_route(self, route: Edge):
         """ Buys the specified route for self.current_player. """
@@ -198,11 +213,15 @@ class GameplayWidget(QWidget):
 
 
             # Take cards for route
-            self.current_player.hand[Color.locomotive] -= route.locomotive_count
-            self.current_player.hand[route.color] -= route.length - route.locomotive_count
-            if self.current_player.hand[route.color] < 0:
-                self.current_player.hand[Color.locomotive] -= abs(self.current_player.hand[route.color])
-                self.current_player.hand[route.color] = 0
+            # For now: choose first color that is enough
+            if route.color == Color.grey:
+                extra_locomotives = self.current_player.hand[Color.locomotive] - route.locomotive_count
+                for color in Color:
+                    if self.current_player.hand[color] + extra_locomotives >= route.length - route.locomotive_count + extra_count:
+                        self.take_cards_for_route(route, color_to_take=color)
+                        break
+            else:
+                self.take_cards_for_route(route)
 
         # Buy route
         route.bought_by = self.current_player

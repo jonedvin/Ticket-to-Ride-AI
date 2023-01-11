@@ -76,10 +76,18 @@ class AI(Player):
         if self.hand[Color.locomotive] < route.locomotive_count:
             return False
 
-        # Enough other cards?
+        # Extra locomotives?
         extra_locomotives = self.hand[Color.locomotive] - route.locomotive_count
-        if self.hand[route.color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
-            return False
+
+        # Grey is not actually a color
+        if route.color == Color.grey:
+            for color in Color:
+                if self.hand[color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
+                    return True
+
+        # Has enough cards?
+        elif self.hand[route.color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
+                return False
 
         return True
 
@@ -102,7 +110,7 @@ class AI(Player):
         """ Adds count random cards to self.hand. """
         self.last_action = LastAction.drew_cards
         for _ in range(count):
-            self.hand[Color(random.randint(1, len(Color)))] += 1
+            self.hand[Color(random.randint(1, len(Color)-1))] += 1
 
 
     def draw_tickets(self, max_tickets: int, min_tickets: int):

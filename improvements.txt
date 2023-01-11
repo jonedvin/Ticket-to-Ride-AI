@@ -1,8 +1,6 @@
 TODO:
-- Grey is not it's own color...
-- Deal with destinations being impossible to reach
 - Add undo button
-- Add AI personality (TicketTrainLimit, longest route tactics etc., prioritize length vs points)
+- Deal with destinations being impossible to reach
 
 
 OPTIMIZATIONS:
@@ -11,9 +9,11 @@ OPTIMIZATIONS:
     '- A*
 - Only buy tickets if there's more than X trains left for each player
 - Don't try tunnels unless you have an extra card
+- Ranger ruter etter hvor lang omvei man får hvis man ikke kjøper den
 - AI should prioritize using locomotives where they're necessary
 - Make AI.draw_tickets combine tickets if more than one is to be drawn
 - Improve ticket complete check -> store ticket path?
 - Look for better way of stopping all recursive calls of function
 - Smarter usage of cards on hand
 - Buy routes based on opponents predicted path
+- Add AI personality (TicketTrainLimit, longest route tactics etc., prioritize length vs points)
