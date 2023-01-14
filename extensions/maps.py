@@ -14,6 +14,7 @@ class Map():
         self.nodes = []
         self.edges = []
         self.tickets = []
+        self.blue_tickets = []
 
         if map.lower() == "europe":
             self.init_europe()
@@ -186,9 +187,30 @@ class Map():
 
         # Tickets
         # NOTE: current tickets are made up
-        self.tickets.append(Ticket(cadiz, stockholm, 21))
-        self.tickets.append(Ticket(paris, danzig, 12))
-        self.tickets.append(Ticket(sofia, smolensk, 13))
-        self.tickets.append(Ticket(london, berlin, 8))
-        self.tickets.append(Ticket(brindisi, angora, 14))
+        self.tickets.append(Ticket(cadiz, frankfurt, 13))
+        self.tickets.append(Ticket(lisbon, cadiz, 2))
+        self.tickets.append(Ticket(warszawa, budapest, 5))
+        self.tickets.append(Ticket(warszawa, sevastopol, 12))
+        self.tickets.append(Ticket(bruxelles, stockholm, 10))
+        self.tickets.append(Ticket(edinburgh, essen, 9))
+        self.tickets.append(Ticket(dieppe, marseille, 5))
+        self.tickets.append(Ticket(stockholm, wilno, 12))
+        self.tickets.append(Ticket(bucuresti, erzurum, 7))
+        self.tickets.append(Ticket(venezia, warszawa, 8))
+        self.tickets.append(Ticket(munchen, sarajevo, 7))
+        self.tickets.append(Ticket(dieppe, kobenhavn, 9))
+        self.tickets.append(Ticket(danzig, budapest, 7))
+        self.tickets.append(Ticket(riga, kharkov, 10))
+        self.tickets.append(Ticket(munchen, petrograd, 14))
+        self.tickets.append(Ticket(pamplona, palermo, 12))
+        self.tickets.append(Ticket(amsterdam, venezia, 6))
+        self.tickets.append(Ticket(sofia, kyiv, 6))
+        self.tickets.append(Ticket(sochi, smyrna, 9))
+
+        self.blue_tickets.append(Ticket(essen, angora, 16))
+        self.blue_tickets.append(Ticket(riga, brindisi, 17))
+        self.blue_tickets.append(Ticket(amsterdam, rostov, 19))
+        self.blue_tickets.append(Ticket(pamplona, kyiv, 18))
+        self.blue_tickets.append(Ticket(london, sochi, 20))
+        self.blue_tickets.append(Ticket(paris, sevastopol, 17))
 

@@ -82,8 +82,9 @@ class AI(Player):
         # Grey is not actually a color
         if route.color == Color.grey:
             for color in Color:
-                if self.hand[color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
+                if self.hand[color] + extra_locomotives > route.length - route.locomotive_count + extra_count:
                     return True
+            return False
 
         # Has enough cards?
         elif self.hand[route.color] + extra_locomotives < route.length - route.locomotive_count + extra_count:
@@ -113,10 +114,19 @@ class AI(Player):
             self.hand[Color(random.randint(1, len(Color)-1))] += 1
 
 
-    def draw_tickets(self, max_tickets: int, min_tickets: int):
+    def draw_tickets(self, max_tickets: int, min_tickets: int, blue_tickets: int = 0):
         """ Draws tickets and picks which ones to keep. """
         self.last_action = LastAction.drew_cards
 
+        # Blue tickets
+        for _ in range(blue_tickets):
+            ticket = self.gameplay_widget.map.blue_tickets.pop(random.randint(0, len(self.gameplay_widget.map.blue_tickets)-1))
+            self.tickets.append(ticket)
+            self.find_optimal_path_set(possible_new_tickets=[ticket])
+            self.best_path_set = PathSet.copy_from(self.best_path_set_temp)
+            self.best_path_set_temp = None  # Avoid later confusion
+
+        # Normal tickets
         for _ in range(min_tickets):
 
             # Get optimal paths for all tickets

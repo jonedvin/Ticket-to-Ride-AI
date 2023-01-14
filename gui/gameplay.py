@@ -77,7 +77,8 @@ class GameplayWidget(QWidget):
 
             if type(player) == AI:
                 player.set_gameplay_widget(self)
-                player.draw_tickets(max_tickets=5, min_tickets=2)
+                player.draw_tickets(max_tickets=5, min_tickets=2, blue_tickets=1)
+                player.draw_cards(5)
 
         self.update_current_player_label()
         self.update_players_last_action_label()
@@ -117,8 +118,8 @@ class GameplayWidget(QWidget):
                 text += f"\n\n{player.name}:"
 
                 # Tickets
-                for ticket in player.tickets:
-                    text += f"\n{ticket}"
+                # for ticket in player.tickets:
+                #     text += f"\n{ticket}"
                 
                 # Hand
                 text += "\n"
@@ -126,15 +127,15 @@ class GameplayWidget(QWidget):
                     text += f"\n{color}: {count}"
 
                 # Print paths
-                print()
-                for path in player.best_path_set.paths:
-                    print(path)
+                # print()
+                # for path in player.best_path_set.paths:
+                #     print(path)
 
-                text += "\n"
-                # Routes
-                for route in player.best_path_set.routes_included:
-                    bought = "X" if route.bought_by == player else "  "
-                    text += f"\n{bought} {route}"
+                # text += "\n"
+                # # Routes
+                # for route in player.best_path_set.routes_included:
+                #     bought = "X" if route.bought_by == player else "  "
+                #     text += f"\n{bought} {route}"
 
         self.players_last_action_label.setText(text)
 

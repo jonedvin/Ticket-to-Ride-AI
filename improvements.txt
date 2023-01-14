@@ -1,4 +1,7 @@
 TODO:
+- Add button to finish the game
+- Add buttons to add trains to players (so we don't have to count trains before starting)
+- Add AI tickets to result screen
 - Add undo button
 - Deal with destinations being impossible to reach
 
