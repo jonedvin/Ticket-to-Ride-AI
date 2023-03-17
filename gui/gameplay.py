@@ -122,9 +122,9 @@ class GameplayWidget(QWidget):
                 #     text += f"\n{ticket}"
                 
                 # Hand
-                text += "\n"
-                for color, count in player.hand.items():
-                    text += f"\n{color}: {count}"
+                # text += "\n"
+                # for color, count in player.hand.items():
+                #     text += f"\n{color}: {count}"
 
                 # Print paths
                 # print()
